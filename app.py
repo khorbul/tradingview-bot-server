@@ -3,13 +3,13 @@ import requests
 import os
 from alpaca_trade_api.rest import REST, TimeFrame
 
-alpaca_client = REST(API_KEY, API_SECRET, base_url='https://paper-api.alpaca.markets')  # Use paper trading for testing
-
-app = Flask(__name__)
-
-# Add your trading platform API key and secret as environment variables
 API_KEY = os.getenv("API_KEY")
 API_SECRET = os.getenv("API_SECRET")
+BASE_URL = os.getenv("BASE_URL", "https://paper-api.alpaca.markets")
+
+alpaca_client = REST(API_KEY, API_SECRET, base_url=BASE_URL)  # Use paper trading for testing
+
+app = Flask(__name__)
 
 def execute_trade(action):
     try:
