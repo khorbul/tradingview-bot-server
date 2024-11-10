@@ -55,5 +55,9 @@ def webhook():
 
     return jsonify({"status": "success"}), 200
 
+@app.route('/')
+def home():
+    return "Trading Bot is live!"
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
