@@ -3,45 +3,57 @@ import requests
 import os
 from alpaca_trade_api.rest import REST, TimeFrame
 
-API_KEY = os.getenv("API_KEY")
-API_SECRET = os.getenv("API_SECRET")
-BASE_URL = os.getenv("BASE_URL", "https://paper-api.alpaca.markets")
-
-alpaca_client = REST(API_KEY, API_SECRET, base_url=BASE_URL)  # Use paper trading for testing
-
 app = Flask(__name__)
 
-def execute_trade(action):
+API_KEY = "your_api_key"
+API_SECRET = "your_api_secret"
+alpaca_client = REST(API_KEY, API_SECRET, base_url='https://paper-api.alpaca.markets')
+
+def execute_trade(action, symbol):
     try:
         if action == "BUY":
-            order = alpaca_client.submit_order(
-                symbol='NQ1!',  # Stock symbol, e.g., 'AAPL' for Apple
+            alpaca_client.submit_order(
+                symbol=symbol,  # Stock symbol, e.g., 'AAPL' for Apple
                 qty=1,          # Quantity to buy
                 side='buy',
                 type='market',
                 time_in_force='gtc'
             )
-            print("Buy order placed:", order)
+            print(f"Market BUY order placed for {symbol} at {price}")
         elif action == "SELL":
-            order = alpaca_client.submit_order(
-                symbol='NQ1!',  # Stock symbol, e.g., 'AAPL' for Apple
+            alpaca_client.submit_order(
+                symbol=symbol,  # Stock symbol, e.g., 'AAPL' for Apple
                 qty=1,          # Quantity to sell
                 side='sell',
                 type='market',
                 time_in_force='gtc'
             )
-            print("Sell order placed:", order)
+            print(f"Market SELL order placed for {symbol} at {price}")
+        else:
+            print("Invalid action received")
     except Exception as e:
-        print("An error occurred:", e)
+        print(f"Error placing order: {e}")
 
-@app.route("/webhook", methods=["POST"])
+@app.route("/webhook", methods=['POST'])
 def webhook():
-    data = request.json
-    if data['action'] == "BUY":
-        execute_trade("BUY")
-    elif data['action'] == "SELL":
-        execute_trade("SELL")
-    return jsonify(success=True)
+    data = request.get_json()
+
+    if data is None:
+        return jsonify({"error": "No data received"}), 400
+
+    action = data.get('action', '')
+    symbol = data.get('symbol', '')
+
+    print(f"Received action: {action} for {symbol}")
+
+    if action == 'BUY':
+        place_order('buy', symbol)
+    elif action == 'SELL':
+        place_order('sell', symbol)
+    else:
+        return jsonify({"error": "Invalid action"}), 400
+
+    return jsonify({"status": "success"}), 200
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000, debug=True)
+    app.run(host="0.0.0.0", port=10000)
