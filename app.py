@@ -8,7 +8,6 @@ app = Flask(__name__)
 
 API_KEY = "AKZOGG3HQNJNWIHK6L69"
 API_SECRET = "UI9tHyEYGZVWyLOdPTY5WUGJfaZzEeYxcFHxE58M"
-alpaca_client = REST(API_KEY, API_SECRET, base_url='https://paper-api.alpaca.markets')
 
 @app.route('/trade', methods=['POST'])
 def place_order(action, symbol, quantity=1):
