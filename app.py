@@ -1,23 +1,20 @@
 from flask import Flask, request, jsonify
 import requests
 import os
+import alpaca_trade_api as tradeapi
 from alpaca_trade_api.rest import REST, TimeFrame
 
 app = Flask(__name__)
 
-API_KEY = "your_api_key"
-API_SECRET = "your_api_secret"
-alpaca_client = REST(API_KEY, API_SECRET, base_url='https://paper-api.alpaca.markets')
-
-from alpaca_trade_api.rest import REST, TimeFrame
-
-# Initialize the Alpaca API client
+API_KEY = "AKZOGG3HQNJNWIHK6L69"
+API_SECRET = "UI9tHyEYGZVWyLOdPTY5WUGJfaZzEeYxcFHxE58M"
 alpaca_client = REST(API_KEY, API_SECRET, base_url='https://paper-api.alpaca.markets')
 
 @app.route('/trade', methods=['POST'])
 def place_order(action, symbol, quantity=1):
     try:
-        if action == 'buy':
+        alpaca_client = REST(API_KEY, API_SECRET, base_url='https://paper-api.alpaca.markets')
+        if action == 'BUY':
             alpaca_client.submit_order(
                 symbol=symbol,
                 qty=quantity,
@@ -25,7 +22,8 @@ def place_order(action, symbol, quantity=1):
                 type='market',
                 time_in_force='gtc'
             )
-        elif action == 'sell':
+            return {"status": "buy order placed"}
+        elif action == 'SELL':
             alpaca_client.submit_order(
                 symbol=symbol,
                 qty=quantity,
@@ -33,7 +31,9 @@ def place_order(action, symbol, quantity=1):
                 type='market',
                 time_in_force='gtc'
             )
-        return {"status": "order placed"}
+            return {"status": "sell order placed"}
+        else:
+            return {"error": "Invalid action"}
     except Exception as e:
         return {"status": "failed", "reason": str(e)}
 
