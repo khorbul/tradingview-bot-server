@@ -39,14 +39,16 @@ def place_order(action, symbol, quantity=1):
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.get_json()
+    action = data.get("action")
+    symbol = data.get("symbol")
+    quantity = data.get("quantity", 1)
 
-    if data is None:
-        return jsonify({"error": "No data received"}), 400
+    print(f"Received webhook request: action={action}, symbol={symbol}, quantity={quantity}")
 
-    action = data.get('action', '')
-    symbol = data.get('symbol', '')
+    response = place_order(action, symbol, quantity)
+    print(f"Alpaca API response: {response}")
 
-    print(f"Received action: {action} for {symbol}")
+    return jsonify(response)
 
     if action == 'BUY':
         place_order('buy', symbol)
@@ -62,4 +64,7 @@ def home():
     return "Trading Bot is live!"
 
 if __name__ == "__main__":
+    print("Testing Alpaca order...")
+    result = place_order("buy", "NQ1!", 1)  # Test order for AAPL
+    print("Order result:", result)
     app.run(host="0.0.0.0", port=10000)
