@@ -15,20 +15,29 @@ from alpaca_trade_api.rest import REST, TimeFrame
 alpaca_client = REST(API_KEY, API_SECRET, base_url='https://paper-api.alpaca.markets')
 
 @app.route('/trade', methods=['POST'])
-def trade():
-    data = request.get_json()
-    symbol = data.get("symbol")
-    action = data.get("action")  # "buy" or "sell"
-    quantity = data.get("quantity")
+def place_order(action, symbol, quantity=1):
+    try:
+        if action == 'buy':
+            alpaca_client.submit_order(
+                symbol=symbol,
+                qty=quantity,
+                side='buy',
+                type='market',
+                time_in_force='gtc'
+            )
+        elif action == 'sell':
+            alpaca_client.submit_order(
+                symbol=symbol,
+                qty=quantity,
+                side='sell',
+                type='market',
+                time_in_force='gtc'
+            )
+        return {"status": "order placed"}
+    except Exception as e:
+        return {"status": "failed", "reason": str(e)}
 
-    if action == "buy":
-        alpaca_client.submit_order(symbol=symbol, qty=quantity, side='buy', type='market', time_in_force='gtc')
-    elif action == "sell":
-        alpaca_client.submit_order(symbol=symbol, qty=quantity, side='sell', type='market', time_in_force='gtc')
-
-    return jsonify({"status": "order placed"}), 200
-
-@app.route("/webhook", methods=['POST'])
+@app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.get_json()
 
