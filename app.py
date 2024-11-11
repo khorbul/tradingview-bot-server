@@ -9,30 +9,24 @@ API_KEY = "your_api_key"
 API_SECRET = "your_api_secret"
 alpaca_client = REST(API_KEY, API_SECRET, base_url='https://paper-api.alpaca.markets')
 
-def execute_trade(action, symbol):
-    try:
-        if action == "BUY":
-            alpaca_client.submit_order(
-                symbol=symbol,  # Stock symbol, e.g., 'AAPL' for Apple
-                qty=1,          # Quantity to buy
-                side='buy',
-                type='market',
-                time_in_force='gtc'
-            )
-            print(f"Market BUY order placed for {symbol} at {price}")
-        elif action == "SELL":
-            alpaca_client.submit_order(
-                symbol=symbol,  # Stock symbol, e.g., 'AAPL' for Apple
-                qty=1,          # Quantity to sell
-                side='sell',
-                type='market',
-                time_in_force='gtc'
-            )
-            print(f"Market SELL order placed for {symbol} at {price}")
-        else:
-            print("Invalid action received")
-    except Exception as e:
-        print(f"Error placing order: {e}")
+from alpaca_trade_api.rest import REST, TimeFrame
+
+# Initialize the Alpaca API client
+alpaca_client = REST(API_KEY, API_SECRET, base_url='https://paper-api.alpaca.markets')
+
+@app.route('/trade', methods=['POST'])
+def trade():
+    data = request.get_json()
+    symbol = data.get("symbol")
+    action = data.get("action")  # "buy" or "sell"
+    quantity = data.get("quantity")
+
+    if action == "buy":
+        alpaca_client.submit_order(symbol=symbol, qty=quantity, side='buy', type='market', time_in_force='gtc')
+    elif action == "sell":
+        alpaca_client.submit_order(symbol=symbol, qty=quantity, side='sell', type='market', time_in_force='gtc')
+
+    return jsonify({"status": "order placed"}), 200
 
 @app.route("/webhook", methods=['POST'])
 def webhook():
