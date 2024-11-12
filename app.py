@@ -12,23 +12,21 @@ API_SECRET = "O3zBUBz8f9GksEWtDN70Ujd4rbvnKZa7frBgh73u"
 @app.route('/trade', methods=['POST'])
 def place_order(action, symbol, quantity=1):
     try:
-        alpaca_client = REST(API_KEY, API_SECRET, base_url='https://paper-api.alpaca.markets')
+        alpaca_client = REST(API_KEY, API_SECRET, base_url='https://paper-api.alpaca.markets/v2')
         if action == 'BUY':
             alpaca_client.submit_order(
-                symbol=symbol,
-                qty=quantity,
-                side='buy',
-                type='market',
-                time_in_force='gtc'
+                symbol='NQ1!',
+                qty=1,
+                side=OrderSide.BUY,
+                time_in_force=TimeInForce.DAY
             )
             return {"status": "buy order placed"}
         elif action == 'SELL':
             alpaca_client.submit_order(
-                symbol=symbol,
-                qty=quantity,
-                side='sell',
-                type='market',
-                time_in_force='gtc'
+                symbol='NQ1!',
+                qty=1,
+                side=OrderSide.SELL,
+                time_in_force=TimeInForce.DAY
             )
             return {"status": "sell order placed"}
         else:
