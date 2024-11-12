@@ -18,18 +18,18 @@ def place_order(action, symbol, quantity=1):
         alpaca_client = REST(API_KEY, API_SECRET, base_url='https://paper-api.alpaca.markets/v2')
         if action == 'BUY':
             alpaca_client.submit_order(
-                symbol='NQ1!',
+                symbol='BTC/USD',
                 qty=1,
-                side=OrderSide.BUY,
-                time_in_force=TimeInForce.DAY
+                side='buy',
+                time_in_force='gtc'
             )
             return {"status": "buy order placed"}
         elif action == 'SELL':
             alpaca_client.submit_order(
-                symbol='NQ1!',
+                symbol='BTC/USD',
                 qty=1,
-                side=OrderSide.SELL,
-                time_in_force=TimeInForce.DAY
+                side='sell',
+                time_in_force='gtc'
             )
             return {"status": "sell order placed"}
         else:
