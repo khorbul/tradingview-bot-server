@@ -3,9 +3,6 @@ import requests
 import os
 import alpaca_trade_api as tradeapi
 from alpaca_trade_api.rest import REST, TimeFrame
-from alpaca.trading.client import TradingClient
-from alpaca.trading.requests import MarketOrderRequest
-from alpaca.trading.enums import OrderSide, TimeInForce
 
 app = Flask(__name__)
 
