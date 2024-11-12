@@ -18,17 +18,33 @@ def place_order(action, symbol, quantity=1):
                 symbol='BTC/USD',
                 qty=1,
                 side='buy',
-                time_in_force='ioc'
-            )
+                limit=
+                time_in_force='gtc'
+            }
+    
             return {"status": "buy order placed"}
-        elif action == 'SELL':
+
+            filled_order = alpaca_client.get_order(buy_order.id)
+            while filled_order.status != 'filled':
+                filled_order = alpaca_client.get_order(buy_order.id)
+                time.sleep(1)
+
+            buy_price = float(filled_order.filled_avg_price)
+
+            sell_price = buy_price + 100
+
             alpaca_client.submit_order(
                 symbol='BTC/USD',
                 qty=1,
                 side='sell',
-                time_in_force='ioc'
-            )
-            return {"status": "sell order placed"}
+                type='limit'
+                limit_price=sell_price,
+                time_in_force='gtc'
+            }
+
+            print(f"Buy price: ${buy_price:.2f}")
+            print(f"Sell order placed at ${buy_price:.2f} for $100 profit")
+            
         else:
             return {"error": "Invalid action"}
     except Exception as e:
