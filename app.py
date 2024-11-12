@@ -20,7 +20,7 @@ def place_order(action, symbol, quantity=1):
                 side='buy',
                 limit=
                 time_in_force='gtc'
-            }
+            )
     
             return {"status": "buy order placed"}
 
@@ -40,7 +40,7 @@ def place_order(action, symbol, quantity=1):
                 type='limit'
                 limit_price=sell_price,
                 time_in_force='gtc'
-            }
+            )
 
             print(f"Buy price: ${buy_price:.2f}")
             print(f"Sell order placed at ${buy_price:.2f} for $100 profit")
