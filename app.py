@@ -18,7 +18,7 @@ def place_order(action, symbol, quantity=1):
                 symbol='BTC/USD',
                 qty=1,
                 side='buy',
-                time_in_force='gtc'
+                time_in_force='cls'
             )
             return {"status": "buy order placed"}
         elif action == 'SELL':
@@ -26,7 +26,7 @@ def place_order(action, symbol, quantity=1):
                 symbol='BTC/USD',
                 qty=1,
                 side='sell',
-                time_in_force='gtc'
+                time_in_force='cls'
             )
             return {"status": "sell order placed"}
         else:
