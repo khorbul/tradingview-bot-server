@@ -6,8 +6,8 @@ from alpaca_trade_api.rest import REST, TimeFrame
 
 app = Flask(__name__)
 
-API_KEY = "AKZOGG3HQNJNWIHK6L69"
-API_SECRET = "UI9tHyEYGZVWyLOdPTY5WUGJfaZzEeYxcFHxE58M"
+API_KEY = "PKLR99QFR0NBIQ85S2HY"
+API_SECRET = "O3zBUBz8f9GksEWtDN70Ujd4rbvnKZa7frBgh73u"
 
 @app.route('/trade', methods=['POST'])
 def place_order(action, symbol, quantity=1):
