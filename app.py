@@ -51,9 +51,9 @@ def webhook():
     return jsonify(response)
 
     if action == 'BUY':
-        place_order('buy', symbol)
+        place_order('BUY', symbol)
     elif action == 'SELL':
-        place_order('sell', symbol)
+        place_order('SELL', symbol)
     else:
         return jsonify({"error": "Invalid action"}), 400
 
@@ -65,6 +65,6 @@ def home():
 
 if __name__ == "__main__":
     print("Testing Alpaca order...")
-    result = place_order("buy", "NQ1!", 1)  # Test order for AAPL
+    result = place_order("BUY", "NQ1!", 1)  # Test order for AAPL
     print("Order result:", result)
     app.run(host="0.0.0.0", port=10000)
