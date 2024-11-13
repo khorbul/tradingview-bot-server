@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import os
+import json
 from alpaca_trade_api.rest import REST
 
 app = Flask(__name__)
@@ -9,24 +9,25 @@ API_SECRET = "llEfnkpnYl27gHKlN2AJYmqcBkPyxmz2vckkhvvT"
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    if request.content_type == 'application/json':
-        data = request.get_json()
-    elif request.content_type == 'text/plain':
-        import json
-        data = json.loads(request.data)
-    else:
-        return jsonify({"error": "Unsupported Content-Type"}), 415
+    try:
+        data = request.get_json(silent=True)
+        if data is None:
+            data = json.loads(request.data.decode('utf-8'))
         
-    action = data.get("action")
-    symbol = data.get("symbol", "BTC/USD")
-    quantity = data.get("quantity", 1)
+        action = data.get("action")
+        symbol = data.get("symbol", "BTC/USD")
+        quantity = data.get("quantity", 1)
 
-    print(f"Received webhook request: action={action}, symbol={symbol}, quantity={quantity}")
+        print(f"Received webhook request: action={action}, symbol={symbol}, quantity={quantity}")
 
-    response = place_order(action, symbol, quantity)
-    print(f"Alpaca API response: {response}")
+        response = place_order(action, symbol, quantity)
+        print(f"Alpaca API response: {response}")
 
-    return jsonify(response)
+        return jsonify(response)
+        
+    except json.JSONDecodeError:
+        return jsonify({"error": "Invalid JSON format"}), 400
+
 
 def place_order(action, symbol, quantity=1):
     try:
