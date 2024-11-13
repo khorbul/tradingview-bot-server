@@ -25,7 +25,7 @@ def place_order(action, symbol, quantity=1):
                 time_in_force='gtc'
             )
             return {"status": "buy order placed"}
-        elif action == 'SELL'"
+        elif action == 'SELL':
             sell_order = alpaca_client.submit_order(
                 symbol=symbol,
                 qty=quantity,
