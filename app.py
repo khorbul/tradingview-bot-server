@@ -37,7 +37,7 @@ def place_order(action, symbol, quantity=1):
                 symbol='BTC/USD',
                 qty=1,
                 side='sell',
-                type='limit'
+                type='limit',
                 limit_price=sell_price,
                 time_in_force='gtc'
             )
