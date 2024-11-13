@@ -1,9 +1,5 @@
 from flask import Flask, request, jsonify
-import json
-import requests
-import os
 import alpaca_trade_api as tradeapi
-from alpaca_trade_api.rest import REST, TimeFrame
 
 app = Flask(__name__)
 
@@ -45,4 +41,4 @@ def place_order():
         return jsonify({"status": "failed", "reason": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(port=10000)
+    app.run(host='0.0.0.0', port=10000)
