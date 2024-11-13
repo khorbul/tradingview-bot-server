@@ -3,8 +3,8 @@ import alpaca_trade_api as tradeapi
 
 app = Flask(__name__)
 
-API_KEY = 'PKK4GYAKKURCXMG0ZKIT'
-API_SECRET = 'oYKcApxvNERU4tX7Qw6Us1fPOadnhBwZCbjocL4i'
+API_KEY = 'PKCIFVAQQT6AAGXNCHMB'
+API_SECRET = 'LzZniHobMZs2kztwz8SF8RPot1ZT2bBxcvdJB1LZ'
 BASE_URL = 'https://paper-api.alpaca.markets'
 
 api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
@@ -20,7 +20,7 @@ def place_order():
         if action == 'BUY':
             buy_order = api.submit_order(
                 symbol=symbol,
-                qty=1,
+                qty=100,
                 side='buy',
                 type='market',
                 time_in_force='gtc'
@@ -29,7 +29,7 @@ def place_order():
         elif action == 'SELL':
             sell_order = api.submit_order(
                 symbol=symbol,
-                qty=1,
+                qty=100,
                 side='sell',
                 type='market',
                 time_in_force='gtc'
