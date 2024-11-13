@@ -7,8 +7,8 @@ from alpaca_trade_api.rest import REST, TimeFrame
 
 app = Flask(__name__)
 
-API_KEY = os.environ.get('PK3URU8NDWKD8FEMOFRS')
-API_SECRET = os.environ.get('llEfnkpnYl27gHKlN2AJYmqcBkPyxmz2vckkhvvT')
+API_KEY = 'PK3URU8NDWKD8FEMOFRS'
+API_SECRET = 'llEfnkpnYl27gHKlN2AJYmqcBkPyxmz2vckkhvvT'
 BASE_URL = 'https://paper-api.alpaca.markets'
 
 
