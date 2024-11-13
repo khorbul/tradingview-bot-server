@@ -9,7 +9,14 @@ API_SECRET = "llEfnkpnYl27gHKlN2AJYmqcBkPyxmz2vckkhvvT"
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    data = request.get_json()
+    if request.content_type == 'application/json':
+        data = request.get_json()
+    elif request.content_type == 'text/plain':
+        import json
+        data = json.loads(request.data)
+    else:
+        return jsonify({"error": "Unsupported Content-Type"}), 415
+        
     action = data.get("action")
     symbol = data.get("symbol", "BTC/USD")
     quantity = data.get("quantity", 1)
@@ -38,7 +45,6 @@ def place_order(action, symbol, quantity=1):
             return {"status": "failed", "reason": "Invalid action"}
     
     except Exception as e:
-        print("Exception during order placement:", str(e))
         return {"status": "failed", "reason": str(e)}
     
 if __name__ == "__main__":
