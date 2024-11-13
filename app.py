@@ -7,15 +7,15 @@ from alpaca_trade_api.rest import REST, TimeFrame
 
 app = Flask(__name__)
 
-API_KEY = "PK3URU8NDWKD8FEMOFRS"
-API_SECRET = "llEfnkpnYl27gHKlN2AJYmqcBkPyxmz2vckkhvvT"
-BASE_URL = "https://paper-api.alpaca.markets"
+API_KEY = os.environ.get('PK3URU8NDWKD8FEMOFRS')
+API_SECRET = os.environ.get('llEfnkpnYl27gHKlN2AJYmqcBkPyxmz2vckkhvvT')
+BASE_URL = 'https://paper-api.alpaca.markets'
 
 
 @app.route('/trade', methods=['POST'])
 def place_order(action, symbol, quantity=1):
     try:
-        alpaca_client = REST(API_KEY, API_SECRET, base_url = BASE_URL)
+        alpaca_client = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_versio='v2')
         if action == 'BUY':
             buy_order = alpaca_client.submit_order(
                 symbol=symbol,
