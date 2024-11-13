@@ -7,61 +7,42 @@ from alpaca_trade_api.rest import REST, TimeFrame
 
 app = Flask(__name__)
 
-API_KEY = 'PK3URU8NDWKD8FEMOFRS'
-API_SECRET = 'llEfnkpnYl27gHKlN2AJYmqcBkPyxmz2vckkhvvT'
+API_KEY = 'PKK4GYAKKURCXMG0ZKIT'
+API_SECRET = 'oYKcApxvNERU4tX7Qw6Us1fPOadnhBwZCbjocL4i'
 BASE_URL = 'https://paper-api.alpaca.markets'
 
+api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_versio='v2')
 
-@app.route('/trade', methods=['POST'])
-def place_order(action, symbol, quantity=1):
+@app.route('/webhook', methods=['POST'])
+def place_order():
     try:
-        alpaca_client = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_versio='v2')
+        
+        data = request.json
+        action = data.get('action')
+        symbol = data.get('symbol')
+        
         if action == 'BUY':
-            buy_order = alpaca_client.submit_order(
+            buy_order = api.submit_order(
                 symbol=symbol,
-                qty=quantity,
+                qty=1,
                 side='buy',
                 type='market',
                 time_in_force='gtc'
-            )
-            return {"status": "buy order placed"}
+            )    
+            return jsonify({"status": "buy order placed", "order_id": buy_order.id})
         elif action == 'SELL':
-            sell_order = alpaca_client.submit_order(
+            sell_order = api.submit_order(
                 symbol=symbol,
-                qty=quantity,
+                qty=1,
                 side='sell',
                 type='market',
                 time_in_force='gtc'
             )
-            return {"status": "sell order placed"}
+            return jsonify({"status": "sell order placed", "order_id": sell_order.id})
         else:
-            return {"error": "Invalid action"}
+            return jsonify({"status": "no action taken", "reason": "invalid action"}), 400
     except Exception as e:
-        return {"status": "failed", "reason": str(e)}
+        return jsonify({"status": "failed", "reason": str(e)}), 500
 
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    data = request.get_json(silent=True)
-    if data is None:
-        data = json.loads(request.data.decode('utf-8'))
-
-    print(f"Received webhook data: {data}")
-        
-    action = data.get("action")
-    symbol = data.get("symbol")
-    quantity = data.get("quantity", 1)
-
-    if action in ["BUY", "SELL"] and symbol:
-        response = place_order(action, symbol, quantity)
-        print(f"Alpaca API response: {response}")
-        return jsonify(response)
-    else:
-        print("Error: Missing required fields in alert data.")
-        return jsonify({"error": "Missing required fields in alert data"}), 400
-@app.route('/')
-def home():
-    return "Trading Bot is live!"
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    app.run(port=5000)
