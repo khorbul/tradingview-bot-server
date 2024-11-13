@@ -11,7 +11,7 @@ API_KEY = 'PKK4GYAKKURCXMG0ZKIT'
 API_SECRET = 'oYKcApxvNERU4tX7Qw6Us1fPOadnhBwZCbjocL4i'
 BASE_URL = 'https://paper-api.alpaca.markets'
 
-api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_versio='v2')
+api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
 
 @app.route('/webhook', methods=['POST'])
 def place_order():
