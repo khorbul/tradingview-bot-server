@@ -20,7 +20,7 @@ def place_order():
         if action == 'BUY':
             buy_order = api.submit_order(
                 symbol=symbol,
-                qty=100,
+                qty=0.5,
                 side='buy',
                 type='market',
                 time_in_force='gtc'
@@ -29,7 +29,7 @@ def place_order():
         elif action == 'SELL':
             sell_order = api.submit_order(
                 symbol=symbol,
-                qty=100,
+                qty=0.5,
                 side='sell',
                 type='market',
                 time_in_force='gtc'
