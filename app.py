@@ -5,8 +5,8 @@ import time
 
 app = Flask(__name__)
 
-API_KEY = 'PKMLOT0IGBH0K9XPY4I3'
-API_SECRET = 'HTAc8YodoxAN9u1Fj0PdVfbsMdkSuCFdtHdqTzu1'
+API_KEY = 'PKCAXN5MUDCWCEK7XYC0'
+API_SECRET = 'iexDDqoWlg10LhFDfjx7ZaRxXOMlboPVgmLTOpeL'
 BASE_URL = 'https://paper-api.alpaca.markets'
 api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
 
