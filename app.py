@@ -25,7 +25,7 @@ def monitor_profit():
                     sell_order = api.submit_order(
                         symbol=symbol,
                         qty=position.qty,
-                        time='sell',
+                        side='sell',
                         type='market',
                         time_in_force='gtc'
                     )
