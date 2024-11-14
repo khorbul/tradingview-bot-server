@@ -1,7 +1,5 @@
 from flask import Flask, request, jsonify
 import alpaca_trade_api as tradeapi
-import threading
-import time
 
 app = Flask(__name__)
 
@@ -18,35 +16,45 @@ def place_order():
         symbol = data.get('symbol')
         
         if action == 'BUY':
-            buy_order = api.submit_order(
+            quantity = 0.5
+            profit_target = 100
+            stop_loss_limit = 50
+            
+            order = api.submit_order(
                 symbol=symbol,
-                qty=0.5,
+                qty=quantity,
                 side='buy',
                 type='market',
-                time_in_force='gtc'
+                time_in_force='gtc',
+                order_class='bracket',
+                take_profit={'limit_price': None}
+                stop_loss={'stop_price': None}
             )
 
-            filled_order = api.get_order(buy_order.id)
+            filled_order = api.get_order(order.id)
             while filled_order.status != 'filled':
-                filled_order = alpaca_client.get_order(buy_order.id)
-                time.sleep(1)
+                filled_order = api.get_order(buy_order.id)
 
             buy_price = float(filled_order.filled_avg_price)
             print(f"Buy price: ${buy_price:.2f}")
 
-            sell_price = buy_price + 10
+            take_profit_price = buy_price + profit_target
+            stop_loss_price = buy_price - stop_loss_limit
 
-            take_profit_order = api.submit_order(
-                symbol='BTC/USD',
-                qty=0.5,
-                side='sell',
-                type='limit',
-                limit_price=sell_price,
-                time_in_force='gtc'
-            )    
-
-            print(f"Take Profit order placed at ${sell_price:.2f} for $10 profit")
-        
+            order.take_profit['limit_price'] = take_profit_price
+            order.stop_loss['stop_price'] = stop_loss_price
+            
+            print(f"Take Profit set at ${take_profit_price:.2f}")
+            print(f"Stop Loss set at ${stop_loss_price:.2f}")
+            
+            return jsonify({
+                "status": "buy order placed with take profit and stop loss",
+                "order_id": order.id,
+                "buy_price": buy_price,
+                "take_profit_price": take_profit_price,
+                "stop_loss_price": stop_loss_price
+            })
+            
         else:
             return jsonify({"status": "no action taken", "reason": "invalid action"}), 400
             
