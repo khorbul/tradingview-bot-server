@@ -2,51 +2,25 @@ from flask import Flask, request, jsonify
 import alpaca_trade_api as tradeapi
 import threading
 import time
+import os
 
 app = Flask(__name__)
 
-API_KEY = 'PKMLOT0IGBH0K9XPY4I3'
-API_SECRET = 'HTAc8YodoxAN9u1Fj0PdVfbsMdkSuCFdtHdqTzu1'
-BASE_URL = 'https://paper-api.alpaca.markets'
-
+API_KEY = os.getenv('API_KEY')
+API_SECRET = os.getenv('API_SECRET')
+BASE_URL = os.getenv('https://paper-api.alpaca.markets')
 api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
-
-purchase_info = {}
-
-def monitor_profit():
-    while True:
-        for symbol, avg_price in purchase_info.items():
-            try:
-                position = api.get_position(symbol)
-                current_price = float(api.get_last_trade(symbol).price)
-                profit = (current_price - avg_price) * float(position.qty)
-
-                if profit >= 10:
-                    sell_order = api.submit_order(
-                        symbol=symbol,
-                        qty=position.qty,
-                        side='sell',
-                        type='market',
-                        time_in_force='gtc'
-                    )
-                    print(f"Sell order placed for {symbol} with profit of ${profit:.2f}")
-
-                    purchase_info.pop(symbol)
-            except Exception as e:
-                print(f"Error checking profit for {symbol}: {e}")
-        
-        time.sleep (1)
-
-threading.Thread(target=monitor_profit, daemon=True).start()
 
 @app.route('/webhook', methods=['POST'])
 def place_order():
     try:
+        # Get the data from the incoming webhook
         data = request.json
         action = data.get('action')
         symbol = data.get('symbol')
         
         if action == 'BUY':
+            # Submit the buy order
             buy_order = api.submit_order(
                 symbol=symbol,
                 qty=0.5,
@@ -55,11 +29,34 @@ def place_order():
                 time_in_force='gtc'
             )
 
-            time.sleep(1)
-            position = api.get_position(symbol)
-            purchaase_info[symbol] = float(position.avg_entry_price)
-            
-            return jsonify({"status": "buy order placed", "order_id": buy_order.id})
+            # Wait for the buy order to be filled
+            filled_order = alpaca_client.get_order(buy_order.id)
+            while filled_order.status != 'filled':
+                filled_order = alpaca_client.get_order(buy_order.id)
+                time.sleep(1) # Wait 1 second before checking again
+
+            # Get the filled price
+            buy_price = float(filled_order.filled_avg_price)
+
+            # Calculate the sell price for $10 profit
+            sell_price = buy_price + 10 # Adjust the $10 profit target
+
+            # Submit the sell order at the calculated sell price
+            sell_order = alpaca_client.submit_order(
+                symbol='BTC/USD',
+                qty=0.5, # Same quantity as the buy order
+                side='sell',
+                type='limit',
+                limit_price=sell_price,
+                time_in_force='gtc'
+            )    
+
+            # Print the buy price and the sell target
+            print(f"Buy price: ${buy_price:.2f}")
+            print(f"Sell order placed at ${sell_price:.2f} for $10 profit")
+
+            return jsonify({"status": "Buy order placed", "sell_price": sell_price}), 200
+        
         else:
             return jsonify({"status": "no action taken", "reason": "invalid action"}), 400
             
