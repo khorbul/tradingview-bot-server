@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import alpaca_trade_api as tradeapi
+import time
 
 app = Flask(__name__)
 
@@ -20,9 +21,9 @@ def place_order():
             profit_target = 20
             stop_loss_limit = 10
             
-            order = api.submit_order(
-                symbol='BTC/USD',
-                qty=0.5,
+            buy_order = api.submit_order(
+                symbol=symbol,
+                qty=quantity,
                 side='buy',
                 type='market',
                 time_in_force='gtc',
@@ -31,30 +32,34 @@ def place_order():
                 stop_loss={'stop_price': None}
             )
 
-            filled_order = api.get_order(order.id)
+            filled_order = api.get_order(buy_order.id)
             while filled_order.status != 'filled':
                 filled_order = api.get_order(buy_order.id)
+                time.sleep(1)
 
             buy_price = float(filled_order.filled_avg_price)
-            print(f"Buy price: ${buy_price:.2f}")
 
             take_profit_price = buy_price + profit_target
             stop_loss_price = buy_price - stop_loss_limit
 
-            order.take_profit['limit_price'] = take_profit_price
-            order.stop_loss['stop_price'] = stop_loss_price
-            
-            print(f"Take Profit set at ${take_profit_price:.2f}")
-            print(f"Stop Loss set at ${stop_loss_price:.2f}")
+            bracket_order = api.submit_order(
+                symbol=symbol,
+                qty=quantity,
+                side='buy',
+                type='market',
+                time_in_force='gtc',
+                order_class='bracket',
+                take_profit={'limit_price': take_profit_price},
+                stop_loss={'stop_price': stop_loss_price}
+                )
             
             return jsonify({
                 "status": "buy order placed with take profit and stop loss",
-                "order_id": order.id,
+                "order_id": bracket_order.id,
                 "buy_price": buy_price,
                 "take_profit_price": take_profit_price,
                 "stop_loss_price": stop_loss_price
             })
-            
         else:
             return jsonify({"status": "no action taken", "reason": "invalid action"}), 400
             
