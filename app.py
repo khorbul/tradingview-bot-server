@@ -4,8 +4,8 @@ import time
 
 app = Flask(__name__)
 
-API_KEY = 'PKMTKOH9XITSRT1NTHZ3'
-API_SECRET = 'Qhi6FFcjsVA63xZ5mWCs3Xq010XZYlY6Dk5xtk6c'
+API_KEY = 'PK4GWFVXQQL2EUKIRZ0B'
+API_SECRET = '5K3Ougjm7L0cs3fZBWKyltydFdZ7OjZqS3gU3U1V'
 BASE_URL = 'https://paper-api.alpaca.markets'
 api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
 
@@ -42,7 +42,7 @@ def place_order():
             take_profit_price = buy_price + profit_target
             stop_loss_price = buy_price - stop_loss_limit
 
-            bracket_order = api.submit_order(
+            buy_order = api.submit_order(
                 symbol=symbol,
                 qty=quantity,
                 side='buy',
@@ -51,11 +51,11 @@ def place_order():
                 order_class='bracket',
                 take_profit={'limit_price': take_profit_price},
                 stop_loss={'stop_price': stop_loss_price}
-                )
+            )
             
             return jsonify({
                 "status": "buy order placed with take profit and stop loss",
-                "order_id": bracket_order.id,
+                "order_id": buy_order.id,
                 "buy_price": buy_price,
                 "take_profit_price": take_profit_price,
                 "stop_loss_price": stop_loss_price
