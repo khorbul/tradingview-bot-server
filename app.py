@@ -21,8 +21,8 @@ def place_order():
             stop_loss_limit = 50
             
             order = api.submit_order(
-                symbol=symbol,
-                qty=quantity,
+                symbol='BTC/USD',
+                qty=0.5,
                 side='buy',
                 type='market',
                 time_in_force='gtc',
