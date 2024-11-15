@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 import alpaca_trade_api as tradeapi
-import time
 
 app = Flask(__name__)
 
@@ -20,29 +19,14 @@ def place_order():
             quantity = 0.5
             profit_target = 20
             stop_loss_limit = 10
-            
-            buy_order = api.submit_order(
-                symbol=symbol,
-                qty=quantity,
-                side='buy',
-                type='market',
-                time_in_force='gtc',
-                order_class='bracket',
-                take_profit={'limit_price': None},
-                stop_loss={'stop_price': None}
-            )
 
-            filled_order = api.get_order(buy_order.id)
-            while filled_order.status != 'filled':
-                filled_order = api.get_order(buy_order.id)
-                time.sleep(1)
-
-            buy_price = float(filled_order.filled_avg_price)
+            last_trade = api.get_latest_trade(symbol)
+            current_price = last_trade.price
 
             take_profit_price = buy_price + profit_target
             stop_loss_price = buy_price - stop_loss_limit
-
-            buy_order = api.submit_order(
+            
+            order = api.submit_order(
                 symbol=symbol,
                 qty=quantity,
                 side='buy',
@@ -54,14 +38,14 @@ def place_order():
             )
             
             return jsonify({
-                "status": "buy order placed with take profit and stop loss",
-                "order_id": buy_order.id,
-                "buy_price": buy_price,
+                "status": "success",
+                "order_id": order.id,
+                "buy_price": current_price,
                 "take_profit_price": take_profit_price,
                 "stop_loss_price": stop_loss_price
             })
         else:
-            return jsonify({"status": "no action taken", "reason": "invalid action"}), 400
+            return jsonify({"status": "error", "message": "Invalid action provided."}), 400
             
     except Exception as e:
         return jsonify({"status": "failed", "reason": str(e)}), 500
