@@ -3,8 +3,8 @@ import alpaca_trade_api as tradeapi
 
 app = Flask(__name__)
 
-API_KEY = 'PKCAXN5MUDCWCEK7XYC0'
-API_SECRET = 'iexDDqoWlg10LhFDfjx7ZaRxXOMlboPVgmLTOpeL'
+API_KEY = 'PKMTKOH9XITSRT1NTHZ3'
+API_SECRET = 'Qhi6FFcjsVA63xZ5mWCs3Xq010XZYlY6Dk5xtk6c'
 BASE_URL = 'https://paper-api.alpaca.markets'
 api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
 
@@ -27,7 +27,7 @@ def place_order():
                 type='market',
                 time_in_force='gtc',
                 order_class='bracket',
-                take_profit={'limit_price': None}
+                take_profit={'limit_price': None},
                 stop_loss={'stop_price': None}
             )
 
