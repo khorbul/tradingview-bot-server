@@ -17,8 +17,8 @@ def place_order():
         
         if action == 'BUY':
             quantity = 0.5
-            profit_target = 100
-            stop_loss_limit = 50
+            profit_target = 20
+            stop_loss_limit = 10
             
             order = api.submit_order(
                 symbol='BTC/USD',
