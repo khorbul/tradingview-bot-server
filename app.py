@@ -3,50 +3,40 @@ import alpaca_trade_api as tradeapi
 
 app = Flask(__name__)
 
-API_KEY = 'PK4GWFVXQQL2EUKIRZ0B'
-API_SECRET = '5K3Ougjm7L0cs3fZBWKyltydFdZ7OjZqS3gU3U1V'
+API_KEY = 'PK42AKLY4DQHAAZDOZGC'
+API_SECRET = 'L1cbCkZyGEE3RaZDJ5p0lDyXcX5v3EdT2bYSC2Kh'
 BASE_URL = 'https://paper-api.alpaca.markets'
+
 api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
 
 @app.route('/webhook', methods=['POST'])
-def place_order():
+def webhook():
     try:
         data = request.json
         action = data.get('action')
         symbol = data.get('symbol')
-        
+
         if action == 'BUY':
-            quantity = 0.5
-            profit_target = 20
-            stop_loss_limit = 10
-
-            last_trade = api.get_latest_trade(symbol)
-            current_price = last_trade.price
-
-            take_profit_price = buy_price + profit_target
-            stop_loss_price = buy_price - stop_loss_limit
-            
-            order = api.submit_order(
+            buy_order = api.submit_order(
                 symbol=symbol,
-                qty=quantity,
+                qty=0.25,
                 side='buy',
                 type='market',
-                time_in_force='gtc',
-                order_class='bracket',
-                take_profit={'limit_price': take_profit_price},
-                stop_loss={'stop_price': stop_loss_price}
+                time_in_force='gtc'
             )
-            
-            return jsonify({
-                "status": "success",
-                "order_id": order.id,
-                "buy_price": current_price,
-                "take_profit_price": take_profit_price,
-                "stop_loss_price": stop_loss_price
-            })
+            return jsonify({"status": "buy order placed", "order_id": buy_order.id})
+        
+        elif action == 'SELL':
+            sell_order = api.submit_order(
+                symbol=symbol,
+                qty=0.25,
+                side='sell',
+                type='market',
+                time_in_force='gtc'
+            )
+            return jsonify({"status": "sell order placed", "order_id": sell_order.id})
         else:
-            return jsonify({"status": "error", "message": "Invalid action provided."}), 400
-            
+            return jsonify({"status": "no action taken", "reason": "invalid action"}), 400
     except Exception as e:
         return jsonify({"status": "failed", "reason": str(e)}), 500
 
