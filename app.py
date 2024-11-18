@@ -3,8 +3,8 @@ import alpaca_trade_api as tradeapi
 
 app = Flask(__name__)
 
-API_KEY = 'PK42AKLY4DQHAAZDOZGC'
-API_SECRET = 'L1cbCkZyGEE3RaZDJ5p0lDyXcX5v3EdT2bYSC2Kh'
+API_KEY = 'PKE0HJBBRJSWI0SULDYB'
+API_SECRET = 'cwdSuUQSwWID9jLtIQhNJID0UI08ASyUWZJnQVZg'
 BASE_URL = 'https://paper-api.alpaca.markets'
 
 api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
